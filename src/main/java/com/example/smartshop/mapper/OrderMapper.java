@@ -5,7 +5,7 @@ import com.example.smartshop.entity.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {OrderItemMapper.class})
+@Mapper(componentModel = "spring", uses = { OrderItemMapper.class })
 public interface OrderMapper {
 
     @Mapping(source = "client.id", target = "clientId")

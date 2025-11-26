@@ -32,7 +32,6 @@ public class ProductServiceImpl implements ProductService {
             throw new DuplicateResourceException("Product with name '" + request.getName() + "' already exists");
         }
 
-        // Create new product
         Product product = Product.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -48,7 +47,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDTO updateProduct(Long id, ProductUpdateRequest request) {
-        // Find product by ID (non-deleted only)
         Product product = productRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 
@@ -100,11 +98,6 @@ public class ProductServiceImpl implements ProductService {
     public void softDeleteProduct(Long id) {
         Product product = productRepository.findByIdAndNotDeleted(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
-
-        // Check if product is used in any active orders (business rule)
-        // This is a placeholder - you can implement this check when Order management is
-        // ready
-        // For now, we'll allow soft deletion
 
         product.setDeleted(true);
         productRepository.save(product);

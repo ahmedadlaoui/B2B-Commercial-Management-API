@@ -41,7 +41,9 @@ public class OrderServiceImpl implements OrderService {
 
         AppConfig config = appConfigRepository.findAll().stream()
                 .findFirst()
-                .orElseThrow(() -> new BusinessException("Application configuration not found"));
+                .orElseThrow(() -> new BusinessException("App configuration missing"));
+
+        PromoCode promoCode = validatePromoCode(request.getPromoCode());
 
         Order order = Order.builder()
                 .client(client)
@@ -50,17 +52,55 @@ public class OrderServiceImpl implements OrderService {
                 .orderItems(new ArrayList<>())
                 .build();
 
+        BigDecimal subTotal = processOrderItems(order, request.getItems());
+        order.setSubTotal(subTotal);
+
+        BigDecimal tierDiscountAmount = calculateTierDiscount(client.getTier(), subTotal, config);
+        BigDecimal promoDiscountAmount = calculatePromoDiscount(promoCode, subTotal, order);
+        BigDecimal totalDiscountAmount = tierDiscountAmount.add(promoDiscountAmount);
+
+        BigDecimal netAmount = subTotal.subtract(totalDiscountAmount);
+        BigDecimal taxAmount = netAmount.multiply(config.getTvaPercent()).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalAmount = netAmount.add(taxAmount);
+
+        order.setDiscountAmount(totalDiscountAmount);
+        order.setNetAmount(netAmount);
+        order.setTaxAmount(taxAmount);
+        order.setTotalAmount(totalAmount);
+        order.setRemainingAmount(totalAmount);
+
+        Order savedOrder = orderRepository.save(order);
+        return orderMapper.toDTO(savedOrder);
+    }
+
+    private PromoCode validatePromoCode(String code) {
+        if (code == null || code.trim().isEmpty()) {
+            return null;
+        }
+
+        PromoCode promoCode = promoCodeRepository.findByCodeAndActive(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Promo code not found or inactive: " + code));
+
+        if (promoCode.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new BusinessRuleViolationException("Promo code has expired");
+        }
+
+        return promoCode;
+    }
+
+    private BigDecimal processOrderItems(Order order, List<OrderItemRequest> itemRequests) {
         BigDecimal subTotal = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for (OrderItemRequest itemRequest : request.getItems()) {
+        for (OrderItemRequest itemRequest : itemRequests) {
             Product product = productRepository.findByIdAndNotDeleted(itemRequest.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + itemRequest.getProductId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Product not found with ID: " + itemRequest.getProductId()));
 
             if (product.getStock() < itemRequest.getQuantity()) {
                 throw new BusinessRuleViolationException(
-                        "Insufficient stock for product: " + product.getName() + 
-                        ". Available: " + product.getStock() + ", Requested: " + itemRequest.getQuantity());
+                        "Insufficient stock for product: " + product.getName() +
+                                ". Available: " + product.getStock() + ", Requested: " + itemRequest.getQuantity());
             }
 
             BigDecimal unitPrice = product.getPrice();
@@ -82,39 +122,27 @@ public class OrderServiceImpl implements OrderService {
         }
 
         order.setOrderItems(orderItems);
-        order.setSubTotal(subTotal);
+        return subTotal;
+    }
 
-        BigDecimal tierDiscountPercent = getTierDiscountPercent(client.getTier(), config);
-        BigDecimal tierDiscountAmount = subTotal.multiply(tierDiscountPercent).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+    private BigDecimal calculateTierDiscount(CustomerTier tier, BigDecimal subTotal, AppConfig config) {
+        BigDecimal tierDiscountPercent = getTierDiscountPercent(tier, config);
+        return subTotal.multiply(tierDiscountPercent).setScale(2, RoundingMode.HALF_UP);
+    }
 
-        BigDecimal promoDiscountAmount = BigDecimal.ZERO;
-        if (request.getPromoCode() != null && !request.getPromoCode().trim().isEmpty()) {
-            PromoCode promoCode = promoCodeRepository.findByCodeAndActive(request.getPromoCode())
-                    .orElseThrow(() -> new ResourceNotFoundException("Promo code not found or inactive: " + request.getPromoCode()));
-
-            if (promoCode.getExpirationDate().isBefore(LocalDateTime.now())) {
-                throw new BusinessRuleViolationException("Promo code has expired");
-            }
-
-            order.setPromoCode(promoCode);
-            order.setAppliedPromoCode(promoCode.getCode());
-            promoDiscountAmount = subTotal.multiply(promoCode.getDiscountPercent()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-            order.setPromoCodeAmount(promoDiscountAmount);
+    private BigDecimal calculatePromoDiscount(PromoCode promoCode, BigDecimal subTotal, Order order) {
+        if (promoCode == null) {
+            return BigDecimal.ZERO;
         }
 
-        BigDecimal totalDiscountAmount = tierDiscountAmount.add(promoDiscountAmount);
-        BigDecimal netAmount = subTotal.subtract(totalDiscountAmount);
-        BigDecimal taxAmount = netAmount.multiply(config.getTvaPercent()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-        BigDecimal totalAmount = netAmount.add(taxAmount);
+        order.setPromoCode(promoCode);
+        order.setAppliedPromoCode(promoCode.getCode());
 
-        order.setDiscountAmount(totalDiscountAmount);
-        order.setNetAmount(netAmount);
-        order.setTaxAmount(taxAmount);
-        order.setTotalAmount(totalAmount);
-        order.setRemainingAmount(totalAmount);
+        BigDecimal promoDiscountAmount = subTotal.multiply(promoCode.getDiscountPercent()).setScale(2,
+                RoundingMode.HALF_UP);
+        order.setPromoCodeAmount(promoDiscountAmount);
 
-        Order savedOrder = orderRepository.save(order);
-        return orderMapper.toDTO(savedOrder);
+        return promoDiscountAmount;
     }
 
     private BigDecimal getTierDiscountPercent(CustomerTier tier, AppConfig config) {
@@ -126,4 +154,3 @@ public class OrderServiceImpl implements OrderService {
         };
     }
 }
-
