@@ -2,6 +2,7 @@ package com.example.smartshop.service.impl;
 
 import com.example.smartshop.dto.ClientCreateRequest;
 import com.example.smartshop.dto.ClientDTO;
+import com.example.smartshop.dto.ClientUpdateRequest;
 import com.example.smartshop.entity.Client;
 import com.example.smartshop.entity.User;
 import com.example.smartshop.enums.CustomerTier;
@@ -60,6 +61,30 @@ public class ClientServiceImpl implements ClientService {
 
         Client savedClient = clientRepository.save(client);
         return clientMapper.toDTO(savedClient);
+    }
+
+    @Override
+    public ClientDTO updateClient(Long id, ClientUpdateRequest request) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+
+        if (request.getEmail() != null && !request.getEmail().equals(client.getEmail())) {
+            if (clientRepository.existsByEmail(request.getEmail())) {
+                throw new DuplicateResourceException("Client", "email", request.getEmail());
+            }
+            client.setEmail(request.getEmail());
+        }
+
+        if (request.getFullName() != null) {
+            client.setFullName(request.getFullName());
+        }
+
+        if (request.getTier() != null) {
+            client.setTier(request.getTier());
+        }
+
+        Client updatedClient = clientRepository.save(client);
+        return clientMapper.toDTO(updatedClient);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.example.smartshop.mapper.UserMapper;
 import com.example.smartshop.repository.UserRepository;
 import com.example.smartshop.service.AuthService;
 import com.example.smartshop.util.PasswordHashUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDTO login(String username, String password) {
+    public UserDTO login(String username, String password, HttpSession session) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(InvalidCredentialsException::new);
 
@@ -32,13 +33,22 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException();
         }
 
-        log.info("User {} logged in successfully with role {}", user.getUsername(), user.getRole());
+        UserDTO userDTO = userMapper.toDTO(user);
 
-        return userMapper.toDTO(user);
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("username", user.getUsername());
+        session.setAttribute("role", user.getRole().name());
+
+        log.info("User {} logged in successfully with role {} - Session ID: {}",
+                user.getUsername(), user.getRole(), session.getId());
+
+        return userDTO;
     }
 
     @Override
-    public void logout(Long userId) {
-        log.info("User with ID {} logged out", userId);
+    public void logout(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        session.invalidate();
+        log.info("User {} logged out successfully", username);
     }
 }

@@ -7,6 +7,6 @@ public class InvalidCredentialsException extends RuntimeException {
     }
 
     public InvalidCredentialsException() {
-        super("Invalid username or password");
+        super("Invalid username or password. Please try again");
     }
 }
