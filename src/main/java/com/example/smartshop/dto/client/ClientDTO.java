@@ -1,24 +1,25 @@
-package com.example.smartshop.dto;
+package com.example.smartshop.dto.client;
 
+import com.example.smartshop.dto.user.UserDTO;
 import com.example.smartshop.enums.CustomerTier;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientUpdateRequest {
+public class ClientDTO {
 
-    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
+    private Long id;
     private String fullName;
-
-    @Email(message = "Email must be valid")
     private String email;
-
     private CustomerTier tier;
+    private BigDecimal totalSpent;
+    private Integer totalOrders;
+    private UserDTO user;
 }

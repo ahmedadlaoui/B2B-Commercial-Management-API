@@ -1,7 +1,7 @@
 package com.example.smartshop.service;
 
-import com.example.smartshop.dto.UserCreateRequest;
-import com.example.smartshop.dto.UserDTO;
+import com.example.smartshop.dto.user.UserCreateRequest;
+import com.example.smartshop.dto.user.UserDTO;
 
 import java.util.List;
 

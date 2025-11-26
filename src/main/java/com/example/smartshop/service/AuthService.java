@@ -1,6 +1,6 @@
 package com.example.smartshop.service;
 
-import com.example.smartshop.dto.UserDTO;
+import com.example.smartshop.dto.user.UserDTO;
 import jakarta.servlet.http.HttpSession;
 
 public interface AuthService {

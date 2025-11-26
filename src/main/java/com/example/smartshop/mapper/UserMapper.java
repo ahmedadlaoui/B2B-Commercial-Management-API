@@ -1,6 +1,6 @@
 package com.example.smartshop.mapper;
 
-import com.example.smartshop.dto.UserDTO;
+import com.example.smartshop.dto.user.UserDTO;
 import com.example.smartshop.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

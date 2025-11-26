@@ -25,6 +25,9 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(length = 500)
+    private String description;
+
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 

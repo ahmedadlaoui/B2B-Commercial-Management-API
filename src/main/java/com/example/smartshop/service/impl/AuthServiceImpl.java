@@ -1,6 +1,6 @@
 package com.example.smartshop.service.impl;
 
-import com.example.smartshop.dto.UserDTO;
+import com.example.smartshop.dto.user.UserDTO;
 import com.example.smartshop.entity.User;
 import com.example.smartshop.exception.InvalidCredentialsException;
 import com.example.smartshop.mapper.UserMapper;

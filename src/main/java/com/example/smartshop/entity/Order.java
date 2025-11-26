@@ -34,6 +34,9 @@ public class Order {
 
     private String appliedPromoCode;
 
+    @Column(precision = 19, scale = 2)
+    private BigDecimal promoCodeAmount;
+
     @Column(nullable = false, precision = 19, scale = 2)
     @Builder.Default
     private BigDecimal subTotal = BigDecimal.ZERO;

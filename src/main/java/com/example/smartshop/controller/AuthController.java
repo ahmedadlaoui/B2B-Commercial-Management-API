@@ -1,7 +1,7 @@
 package com.example.smartshop.controller;
 
-import com.example.smartshop.dto.LoginRequest;
-import com.example.smartshop.dto.UserDTO;
+import com.example.smartshop.dto.auth.LoginRequest;
+import com.example.smartshop.dto.user.UserDTO;
 import com.example.smartshop.service.AuthService;
 import com.example.smartshop.util.AuthorizationUtil;
 import jakarta.servlet.http.HttpSession;

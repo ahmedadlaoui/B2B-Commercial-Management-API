@@ -1,8 +1,8 @@
 package com.example.smartshop.controller;
 
-import com.example.smartshop.dto.ClientCreateRequest;
-import com.example.smartshop.dto.ClientDTO;
-import com.example.smartshop.dto.ClientUpdateRequest;
+import com.example.smartshop.dto.client.ClientCreateRequest;
+import com.example.smartshop.dto.client.ClientDTO;
+import com.example.smartshop.dto.client.ClientUpdateRequest;
 import com.example.smartshop.service.ClientService;
 import com.example.smartshop.util.AuthorizationUtil;
 import jakarta.servlet.http.HttpSession;

@@ -1,8 +1,8 @@
 package com.example.smartshop.service.impl;
 
-import com.example.smartshop.dto.ClientCreateRequest;
-import com.example.smartshop.dto.ClientDTO;
-import com.example.smartshop.dto.ClientUpdateRequest;
+import com.example.smartshop.dto.client.ClientCreateRequest;
+import com.example.smartshop.dto.client.ClientDTO;
+import com.example.smartshop.dto.client.ClientUpdateRequest;
 import com.example.smartshop.entity.Client;
 import com.example.smartshop.entity.User;
 import com.example.smartshop.enums.CustomerTier;
