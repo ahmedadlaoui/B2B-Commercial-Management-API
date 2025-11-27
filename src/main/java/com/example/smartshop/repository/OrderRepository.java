@@ -12,4 +12,3 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(o) > 0 FROM Order o WHERE o.client.id = :clientId AND o.status = :status")
     boolean existsByClientIdAndStatus(Long clientId, OrderStatus status);
 }
-

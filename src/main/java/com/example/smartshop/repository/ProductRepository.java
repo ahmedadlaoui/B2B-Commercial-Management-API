@@ -1,7 +1,10 @@
 package com.example.smartshop.repository;
 
 import com.example.smartshop.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -9,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     // Find all non-deleted products
     List<Product> findByDeletedFalse();
@@ -29,4 +32,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Check if product exists by name
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END FROM Product p WHERE LOWER(p.name) = LOWER(:name) AND p.deleted = false")
     boolean existsByNameIgnoreCaseAndNotDeleted(String name);
+
+    // Find non-deleted products with pagination
+    @Query("SELECT p FROM Product p WHERE p.deleted = false")
+    Page<Product> findAllNotDeleted(Pageable pageable);
 }

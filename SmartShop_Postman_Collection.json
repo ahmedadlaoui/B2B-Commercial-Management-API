@@ -1,12 +1,13 @@
 {
     "info": {
-        "name": "SmartShop API",
-        "description": "Complete API collection for SmartShop application with session-based authentication",
+        "_postman_id": "smartshop-api-collection-v2",
+        "name": "SmartShop API - Complete Collection",
+        "description": "Complete API collection for SmartShop B2B Commercial Management System with all endpoints",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
-            "name": "Authentication",
+            "name": "Auth",
             "item": [
                 {
                     "name": "Login",
@@ -23,39 +24,37 @@
                             "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/auth/login",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/auth/login",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "auth",
                                 "login"
                             ]
-                        }
+                        },
+                        "description": "Login with username and password. Returns session ID and user details."
                     },
                     "response": []
                 },
                 {
-                    "name": "Get Current User",
+                    "name": "Get Current User (Me)",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8080/api/auth/me",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/auth/me",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "auth",
                                 "me"
                             ]
-                        }
+                        },
+                        "description": "Get current logged-in user information. Requires active session."
                     },
                     "response": []
                 },
@@ -65,25 +64,25 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8080/api/auth/logout",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/auth/logout",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "auth",
                                 "logout"
                             ]
-                        }
+                        },
+                        "description": "Logout and invalidate current session."
                     },
                     "response": []
                 }
-            ]
+            ],
+            "description": "Authentication endpoints for login, logout, and session management"
         },
         {
-            "name": "Client Management",
+            "name": "Clients",
             "item": [
                 {
                     "name": "Create Client",
@@ -97,105 +96,19 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"username\": \"johndoe\",\n  \"password\": \"password123\"\n}"
+                            "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"email\": \"client1@example.com\",\n  \"companyName\": \"Tech Solutions Ltd\",\n  \"address\": \"123 Business Street\",\n  \"phoneNumber\": \"+1234567890\"\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/clients",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/clients",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "clients"
                             ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Clients",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/clients",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "clients"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client by ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/clients/1",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "clients",
-                                "1"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client by User ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/clients/user/1",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "clients",
-                                "user",
-                                "1"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client by Email",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/clients/email/john.doe@example.com",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "clients",
-                                "email",
-                                "john.doe@example.com"
-                            ]
-                        }
+                        },
+                        "description": "Create a new client. ADMIN only. Creates both User and Client entities."
                     },
                     "response": []
                 },
@@ -211,21 +124,101 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"tier\": \"GOLD\"\n}"
+                            "raw": "{\n  \"email\": \"client1updated@example.com\",\n  \"companyName\": \"Tech Solutions International\",\n  \"address\": \"456 Corporate Ave\",\n  \"phoneNumber\": \"+1234567899\"\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/clients/1",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/clients/1",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "clients",
                                 "1"
                             ]
-                        }
+                        },
+                        "description": "Update client details. ADMIN only. All fields are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/clients/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "1"
+                            ]
+                        },
+                        "description": "Get client by ID. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client by User ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/clients/user/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "user",
+                                "1"
+                            ]
+                        },
+                        "description": "Get client by associated user ID. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client by Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/clients/email/client1@example.com",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "email",
+                                "client1@example.com"
+                            ]
+                        },
+                        "description": "Get client by email address. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Clients",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/clients",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients"
+                            ]
+                        },
+                        "description": "Get all clients. ADMIN only."
                     },
                     "response": []
                 },
@@ -235,25 +228,25 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8080/api/clients/1",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/clients/1",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "clients",
                                 "1"
                             ]
-                        }
+                        },
+                        "description": "Delete client and associated user. ADMIN only. Cannot delete if client has pending orders."
                     },
                     "response": []
                 }
-            ]
+            ],
+            "description": "Client management endpoints - all require ADMIN role"
         },
         {
-            "name": "Product Management",
+            "name": "Products",
             "item": [
                 {
                     "name": "Create Product",
@@ -267,61 +260,19 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450\",\n  \"description\": \"15.6 inch, Intel Core i5, 8GB RAM, 256GB SSD\",\n  \"price\": 799.99,\n  \"stock\": 50\n}"
+                            "raw": "{\n  \"name\": \"Laptop HP ProBook\",\n  \"description\": \"Professional business laptop with 16GB RAM\",\n  \"price\": 899.99,\n  \"stock\": 50\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/products",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/products",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "products"
                             ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Products",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/products",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "products"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Product by ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "http://localhost:8080/api/products/1",
-                            "protocol": "http",
-                            "host": [
-                                "localhost"
-                            ],
-                            "port": "8080",
-                            "path": [
-                                "api",
-                                "products",
-                                "1"
-                            ]
-                        }
+                        },
+                        "description": "Create a new product. ADMIN only."
                     },
                     "response": []
                 },
@@ -337,21 +288,175 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450 G9\",\n  \"description\": \"15.6 inch FHD, Intel Core i5-1235U, 16GB RAM, 512GB SSD\",\n  \"price\": 899.99,\n  \"stock\": 45\n}"
+                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450\",\n  \"description\": \"Professional business laptop with 16GB RAM and 512GB SSD\",\n  \"price\": 949.99,\n  \"stock\": 45\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/products/1",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/products/1",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "products",
                                 "1"
                             ]
-                        }
+                        },
+                        "description": "Update product details. ADMIN only. All fields are optional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Product by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/products/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "1"
+                            ]
+                        },
+                        "description": "Get product by ID. Requires login (ADMIN or CLIENT)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Products (Default Pagination)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/products",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ]
+                        },
+                        "description": "Get all products with default pagination (page=0, size=10, sortBy=id, sortDir=ASC). Requires login."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Products (Custom Pagination)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/products?page=0&size=20&sortBy=name&sortDir=ASC",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0",
+                                    "description": "Page number (default: 0)"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "20",
+                                    "description": "Page size (default: 10)"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "name",
+                                    "description": "Sort field: id, name, price, stock (default: id)"
+                                },
+                                {
+                                    "key": "sortDir",
+                                    "value": "ASC",
+                                    "description": "Sort direction: ASC or DESC (default: ASC)"
+                                }
+                            ]
+                        },
+                        "description": "Get all products with custom pagination and sorting. Requires login."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Search Products by Name",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/products?search=laptop&page=0&size=10",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "laptop",
+                                    "description": "Search term (searches in name and description)"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Search products by name or description. Requires login."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Search Products with Sort by Price DESC",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/products?search=professional&sortBy=price&sortDir=DESC&page=0&size=5",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "professional"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "price"
+                                },
+                                {
+                                    "key": "sortDir",
+                                    "value": "DESC"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "5"
+                                }
+                            ]
+                        },
+                        "description": "Search products with custom sorting. Requires login."
                     },
                     "response": []
                 },
@@ -361,18 +466,17 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8080/api/products/1",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/products/1",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "products",
                                 "1"
                             ]
-                        }
+                        },
+                        "description": "Soft delete a product (marks as deleted, preserves history). ADMIN only."
                     },
                     "response": []
                 },
@@ -382,29 +486,29 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "http://localhost:8080/api/products/1/restore",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/products/1/restore",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "products",
                                 "1",
                                 "restore"
                             ]
-                        }
+                        },
+                        "description": "Restore a soft-deleted product. ADMIN only."
                     },
                     "response": []
                 }
-            ]
+            ],
+            "description": "Product management with specification-based search, pagination, and soft-delete"
         },
         {
-            "name": "Order Management",
+            "name": "Orders",
             "item": [
                 {
-                    "name": "Create Order",
+                    "name": "Create Order (No Promo Code)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -418,21 +522,56 @@
                             "raw": "{\n  \"clientId\": 1,\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 1\n    }\n  ]\n}"
                         },
                         "url": {
-                            "raw": "http://localhost:8080/api/orders",
-                            "protocol": "http",
+                            "raw": "{{base_url}}/api/orders",
                             "host": [
-                                "localhost"
+                                "{{base_url}}"
                             ],
-                            "port": "8080",
                             "path": [
                                 "api",
                                 "orders"
                             ]
-                        }
+                        },
+                        "description": "Create an order without promo code. ADMIN only. Status defaults to PENDING. Applies tier discount based on client tier."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Order (With Promo Code)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"clientId\": 1,\n  \"promoCode\": \"SUMMER2024\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 3\n    },\n    {\n      \"productId\": 3,\n      \"quantity\": 5\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ]
+                        },
+                        "description": "Create an order with promo code. ADMIN only. Validates promo code (active and not expired). Applies both tier discount and promo discount. PromoCodeAmount field tracks the discount."
                     },
                     "response": []
                 }
-            ]
+            ],
+            "description": "Order management with complex discount calculations (tier + promo) and tax application"
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8080",
+            "type": "string"
         }
     ]
 }

@@ -8,12 +8,15 @@ import com.example.smartshop.util.AuthorizationUtil;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -73,14 +76,29 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getAllProducts(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir,
+            @RequestParam(required = false) String search,
+            HttpSession session) {
+
         authorizationUtil.requireLogin(session);
 
-        List<ProductDTO> products = productService.getAllProducts();
+        Sort sort = sortDir.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<ProductDTO> productPage = productService.getAllProducts(pageable, search);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("products", products);
-        response.put("total", products.size());
+        response.put("products", productPage.getContent());
+        response.put("currentPage", productPage.getNumber());
+        response.put("totalItems", productPage.getTotalElements());
+        response.put("totalPages", productPage.getTotalPages());
+        response.put("pageSize", productPage.getSize());
+        response.put("hasNext", productPage.hasNext());
+        response.put("hasPrevious", productPage.hasPrevious());
 
         return ResponseEntity.ok(response);
     }
