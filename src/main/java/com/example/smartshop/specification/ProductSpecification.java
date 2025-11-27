@@ -10,6 +10,10 @@ import java.util.List;
 
 public class ProductSpecification {
 
+    public static Specification<Product> isNotDeleted() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false);
+    }
+
     public static Specification<Product> hasPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
 
         return (root, query, criteriaBuilder) -> {
@@ -58,21 +62,21 @@ public class ProductSpecification {
 
             Predicate nameLike = criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("name")),
-                    pattern
-            );
+                    pattern);
 
             Predicate descriptionLike = criteriaBuilder.like(
                     criteriaBuilder.lower(root.get("description")),
-                    pattern
-            );
+                    pattern);
 
             return criteriaBuilder.or(nameLike, descriptionLike);
         };
     }
 
-    public static Specification<Product> buildFilterSpecification(BigDecimal minPrice, BigDecimal maxPrice, Integer minStock, Integer maxStock, String keyWord) {
+    public static Specification<Product> buildFilterSpecification(BigDecimal minPrice, BigDecimal maxPrice,
+            Integer minStock, Integer maxStock, String keyWord) {
 
-        Specification<Product> spec = Specification.allOf();
+        Specification<Product> spec = Specification.where(isNotDeleted());
+
         if (minPrice != null || maxPrice != null) {
             spec = spec.and(hasPriceBetween(minPrice, maxPrice));
         }
@@ -84,8 +88,8 @@ public class ProductSpecification {
         if (keyWord != null) {
             spec = spec.and(hasKeyWord(keyWord));
         }
-        return spec;
 
+        return spec;
     }
 
 }

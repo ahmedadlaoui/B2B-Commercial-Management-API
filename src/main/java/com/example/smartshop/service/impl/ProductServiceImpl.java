@@ -10,7 +10,7 @@ import com.example.smartshop.exception.ResourceNotFoundException;
 import com.example.smartshop.mapper.ProductMapper;
 import com.example.smartshop.repository.ProductRepository;
 import com.example.smartshop.service.ProductService;
-import jakarta.persistence.criteria.Predicate;
+import com.example.smartshop.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,24 +100,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductDTO> getAllProducts(Pageable pageable, String search) {
-        Specification<Product> spec = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            // Always filter out deleted products
-            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
-
-            // Add search criteria if provided
-            if (search != null && !search.trim().isEmpty()) {
-                String searchPattern = "%" + search.toLowerCase() + "%";
-                Predicate namePredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("name")), searchPattern);
-                Predicate descriptionPredicate = criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("description")), searchPattern);
-                predicates.add(criteriaBuilder.or(namePredicate, descriptionPredicate));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<Product> spec = ProductSpecification.buildFilterSpecification(
+                null, null, null, null, search);
 
         Page<Product> productPage = productRepository.findAll(spec, pageable);
         return productPage.map(productMapper::toDTO);
