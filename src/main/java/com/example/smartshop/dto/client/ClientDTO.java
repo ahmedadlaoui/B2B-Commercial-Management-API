@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -21,5 +22,7 @@ public class ClientDTO {
     private CustomerTier tier;
     private BigDecimal totalSpent;
     private Integer totalOrders;
+    private LocalDateTime firstOrderDate;
+    private LocalDateTime lastOrderDate;
     private UserDTO user;
 }

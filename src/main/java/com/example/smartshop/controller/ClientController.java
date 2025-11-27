@@ -3,6 +3,7 @@ package com.example.smartshop.controller;
 import com.example.smartshop.dto.client.ClientCreateRequest;
 import com.example.smartshop.dto.client.ClientDTO;
 import com.example.smartshop.dto.client.ClientUpdateRequest;
+import com.example.smartshop.dto.order.OrderDTO;
 import com.example.smartshop.service.ClientService;
 import com.example.smartshop.util.AuthorizationUtil;
 import jakarta.servlet.http.HttpSession;
@@ -126,6 +127,22 @@ public class ClientController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Client deleted successfully");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<Map<String, Object>> getClientOrders(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        authorizationUtil.requireAdmin(session);
+
+        List<OrderDTO> orders = clientService.getClientOrders(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("orders", orders);
+        response.put("count", orders.size());
 
         return ResponseEntity.ok(response);
     }

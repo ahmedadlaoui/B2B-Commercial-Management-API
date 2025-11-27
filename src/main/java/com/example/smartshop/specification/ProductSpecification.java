@@ -11,11 +11,11 @@ import java.util.List;
 public class ProductSpecification {
 
     public static Specification<Product> isNotDeleted() {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("deleted"), false);
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("deleted"), false);
     }
 
     public static Specification<Product> hasPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
-
         return (root, query, criteriaBuilder) -> {
             if (minPrice == null && maxPrice == null) {
                 return null;

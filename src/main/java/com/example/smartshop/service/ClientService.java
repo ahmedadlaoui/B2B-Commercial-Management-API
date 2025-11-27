@@ -3,6 +3,7 @@ package com.example.smartshop.service;
 import com.example.smartshop.dto.client.ClientCreateRequest;
 import com.example.smartshop.dto.client.ClientDTO;
 import com.example.smartshop.dto.client.ClientUpdateRequest;
+import com.example.smartshop.dto.order.OrderDTO;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ClientService {
     void deleteClient(Long id);
 
     boolean existsByEmail(String email);
+
+    List<OrderDTO> getClientOrders(Long clientId);
 }

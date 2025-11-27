@@ -3,6 +3,7 @@ package com.example.smartshop.service.impl;
 import com.example.smartshop.dto.client.ClientCreateRequest;
 import com.example.smartshop.dto.client.ClientDTO;
 import com.example.smartshop.dto.client.ClientUpdateRequest;
+import com.example.smartshop.dto.order.OrderDTO;
 import com.example.smartshop.entity.Client;
 import com.example.smartshop.entity.User;
 import com.example.smartshop.enums.CustomerTier;
@@ -12,6 +13,7 @@ import com.example.smartshop.exception.DuplicateResourceException;
 import com.example.smartshop.exception.BusinessRuleViolationException;
 import com.example.smartshop.exception.ResourceNotFoundException;
 import com.example.smartshop.mapper.ClientMapper;
+import com.example.smartshop.mapper.OrderMapper;
 import com.example.smartshop.repository.ClientRepository;
 import com.example.smartshop.repository.OrderRepository;
 import com.example.smartshop.repository.UserRepository;
@@ -34,6 +36,7 @@ public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final ClientMapper clientMapper;
+    private final OrderMapper orderMapper;
     private final PasswordHashUtil passwordHashUtil;
 
     @Override
@@ -140,5 +143,16 @@ public class ClientServiceImpl implements ClientService {
     @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
         return clientRepository.existsByEmail(email);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getClientOrders(Long clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Client", "id", clientId));
+
+        return client.getOrders().stream()
+                .map(orderMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,10 @@ public class Client {
     @Column(nullable = false)
     @Builder.Default
     private Integer totalOrders = 0;
+
+    private LocalDateTime firstOrderDate;
+
+    private LocalDateTime lastOrderDate;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
