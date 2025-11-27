@@ -6,11 +6,14 @@ import com.example.smartshop.dto.client.ClientUpdateRequest;
 import com.example.smartshop.entity.Client;
 import com.example.smartshop.entity.User;
 import com.example.smartshop.enums.CustomerTier;
+import com.example.smartshop.enums.OrderStatus;
 import com.example.smartshop.enums.UserRole;
 import com.example.smartshop.exception.DuplicateResourceException;
+import com.example.smartshop.exception.BusinessRuleViolationException;
 import com.example.smartshop.exception.ResourceNotFoundException;
 import com.example.smartshop.mapper.ClientMapper;
 import com.example.smartshop.repository.ClientRepository;
+import com.example.smartshop.repository.OrderRepository;
 import com.example.smartshop.repository.UserRepository;
 import com.example.smartshop.service.ClientService;
 import com.example.smartshop.util.PasswordHashUtil;
@@ -29,6 +32,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final ClientMapper clientMapper;
     private final PasswordHashUtil passwordHashUtil;
 
@@ -123,6 +127,10 @@ public class ClientServiceImpl implements ClientService {
     public void deleteClient(Long id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Client", "id", id));
+
+        if (orderRepository.existsByClientIdAndStatus(id, OrderStatus.PENDING)) {
+            throw new BusinessRuleViolationException("Cannot delete client with pending orders");
+        }
 
         userRepository.deleteById(client.getUser().getId());
         clientRepository.deleteById(id);
