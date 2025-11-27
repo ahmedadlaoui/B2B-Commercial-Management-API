@@ -1,8 +1,8 @@
 {
     "info": {
-        "_postman_id": "smartshop-api-collection-v2",
-        "name": "SmartShop API - Complete Collection",
-        "description": "Complete API collection for SmartShop B2B Commercial Management System with all endpoints",
+        "_postman_id": "smartshop-complete-collection",
+        "name": "SmartShop API - Complete Collection v2",
+        "description": "Complete API collection for SmartShop B2B Commercial Management System with all endpoints including order management",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
@@ -96,7 +96,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"email\": \"client1@example.com\",\n  \"companyName\": \"Tech Solutions Ltd\",\n  \"address\": \"123 Business Street\",\n  \"phoneNumber\": \"+1234567890\"\n}"
+                            "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"fullName\": \"Ahmed El Mansouri\",\n  \"email\": \"ahmed@example.com\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/clients",
@@ -108,7 +108,7 @@
                                 "clients"
                             ]
                         },
-                        "description": "Create a new client. ADMIN only. Creates both User and Client entities."
+                        "description": "Create a new client. ADMIN only. Creates both User and Client entities. Client starts with BASIC tier."
                     },
                     "response": []
                 },
@@ -124,7 +124,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"email\": \"client1updated@example.com\",\n  \"companyName\": \"Tech Solutions International\",\n  \"address\": \"456 Corporate Ave\",\n  \"phoneNumber\": \"+1234567899\"\n}"
+                            "raw": "{\n  \"fullName\": \"Ahmed El Mansouri Updated\",\n  \"email\": \"ahmed.updated@example.com\"\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/clients/1",
@@ -157,7 +157,7 @@
                                 "1"
                             ]
                         },
-                        "description": "Get client by ID. ADMIN only."
+                        "description": "Get client by ID. ADMIN only. Returns client info including tier, totalOrders, totalSpent, firstOrderDate, lastOrderDate."
                     },
                     "response": []
                 },
@@ -188,7 +188,7 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/clients/email/client1@example.com",
+                            "raw": "{{base_url}}/api/clients/email/ahmed@example.com",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -196,7 +196,7 @@
                                 "api",
                                 "clients",
                                 "email",
-                                "client1@example.com"
+                                "ahmed@example.com"
                             ]
                         },
                         "description": "Get client by email address. ADMIN only."
@@ -219,6 +219,27 @@
                             ]
                         },
                         "description": "Get all clients. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client Order History",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/clients/1/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "1",
+                                "orders"
+                            ]
+                        },
+                        "description": "Get order history for a specific client. ADMIN only. Shows all orders with details."
                     },
                     "response": []
                 },
@@ -260,7 +281,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook\",\n  \"description\": \"Professional business laptop with 16GB RAM\",\n  \"price\": 899.99,\n  \"stock\": 50\n}"
+                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450\",\n  \"description\": \"Professional business laptop with 16GB RAM\",\n  \"price\": 8999.99,\n  \"stock\": 50\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/products",
@@ -288,7 +309,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450\",\n  \"description\": \"Professional business laptop with 16GB RAM and 512GB SSD\",\n  \"price\": 949.99,\n  \"stock\": 45\n}"
+                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450 G9\",\n  \"description\": \"Professional business laptop with 16GB RAM and 512GB SSD\",\n  \"price\": 9499.99,\n  \"stock\": 45\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/products/1",
@@ -326,7 +347,7 @@
                     "response": []
                 },
                 {
-                    "name": "Get All Products (Default Pagination)",
+                    "name": "Get All Products (Default)",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -340,12 +361,12 @@
                                 "products"
                             ]
                         },
-                        "description": "Get all products with default pagination (page=0, size=10, sortBy=id, sortDir=ASC). Requires login."
+                        "description": "Get all products with default pagination. Requires login."
                     },
                     "response": []
                 },
                 {
-                    "name": "Get All Products (Custom Pagination)",
+                    "name": "Get All Products (Paginated)",
                     "request": {
                         "method": "GET",
                         "header": [],
@@ -361,71 +382,33 @@
                             "query": [
                                 {
                                     "key": "page",
-                                    "value": "0",
-                                    "description": "Page number (default: 0)"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "20",
-                                    "description": "Page size (default: 10)"
-                                },
-                                {
-                                    "key": "sortBy",
-                                    "value": "name",
-                                    "description": "Sort field: id, name, price, stock (default: id)"
-                                },
-                                {
-                                    "key": "sortDir",
-                                    "value": "ASC",
-                                    "description": "Sort direction: ASC or DESC (default: ASC)"
-                                }
-                            ]
-                        },
-                        "description": "Get all products with custom pagination and sorting. Requires login."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Search Products by Name",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/products?search=laptop&page=0&size=10",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products"
-                            ],
-                            "query": [
-                                {
-                                    "key": "search",
-                                    "value": "laptop",
-                                    "description": "Search term (searches in name and description)"
-                                },
-                                {
-                                    "key": "page",
                                     "value": "0"
                                 },
                                 {
                                     "key": "size",
-                                    "value": "10"
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "name"
+                                },
+                                {
+                                    "key": "sortDir",
+                                    "value": "ASC"
                                 }
                             ]
                         },
-                        "description": "Search products by name or description. Requires login."
+                        "description": "Get products with custom pagination and sorting."
                     },
                     "response": []
                 },
                 {
-                    "name": "Search Products with Sort by Price DESC",
+                    "name": "Search Products",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/products?search=professional&sortBy=price&sortDir=DESC&page=0&size=5",
+                            "raw": "{{base_url}}/api/products?search=laptop&sortBy=price&sortDir=DESC",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -436,7 +419,7 @@
                             "query": [
                                 {
                                     "key": "search",
-                                    "value": "professional"
+                                    "value": "laptop"
                                 },
                                 {
                                     "key": "sortBy",
@@ -445,18 +428,10 @@
                                 {
                                     "key": "sortDir",
                                     "value": "DESC"
-                                },
-                                {
-                                    "key": "page",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "5"
                                 }
                             ]
                         },
-                        "description": "Search products with custom sorting. Requires login."
+                        "description": "Search products by name or description."
                     },
                     "response": []
                 },
@@ -476,7 +451,7 @@
                                 "1"
                             ]
                         },
-                        "description": "Soft delete a product (marks as deleted, preserves history). ADMIN only."
+                        "description": "Soft delete a product. ADMIN only."
                     },
                     "response": []
                 },
@@ -508,7 +483,7 @@
             "name": "Orders",
             "item": [
                 {
-                    "name": "Create Order (No Promo Code)",
+                    "name": "Create Order (No Promo)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -531,12 +506,12 @@
                                 "orders"
                             ]
                         },
-                        "description": "Create an order without promo code. ADMIN only. Status defaults to PENDING. Applies tier discount based on client tier."
+                        "description": "Create order without promo code. ADMIN only. Status defaults to PENDING. Applies tier discount based on client's current tier. Stock is reduced immediately."
                     },
                     "response": []
                 },
                 {
-                    "name": "Create Order (With Promo Code)",
+                    "name": "Create Order (With Promo)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -547,7 +522,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"clientId\": 1,\n  \"promoCode\": \"SUMMER2024\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 3\n    },\n    {\n      \"productId\": 3,\n      \"quantity\": 5\n    }\n  ]\n}"
+                            "raw": "{\n  \"clientId\": 1,\n  \"promoCode\": \"SUMMER2024\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 3\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 2\n    }\n  ]\n}"
                         },
                         "url": {
                             "raw": "{{base_url}}/api/orders",
@@ -559,12 +534,189 @@
                                 "orders"
                             ]
                         },
-                        "description": "Create an order with promo code. ADMIN only. Validates promo code (active and not expired). Applies both tier discount and promo discount. PromoCodeAmount field tracks the discount."
+                        "description": "Create order with promo code. ADMIN only. Validates promo code (active and not expired). Applies both tier and promo discounts."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Order by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "1"
+                            ]
+                        },
+                        "description": "Get order by ID. ADMIN only. Returns complete order details."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Orders",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ]
+                        },
+                        "description": "Get all orders. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Orders by Client ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders?clientId=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "clientId",
+                                    "value": "1"
+                                }
+                            ]
+                        },
+                        "description": "Get all orders for a specific client. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Orders by Status (PENDING)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders?status=PENDING",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "PENDING"
+                                }
+                            ]
+                        },
+                        "description": "Get all orders with PENDING status. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Orders by Status (CONFIRMED)",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders?status=CONFIRMED",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "CONFIRMED"
+                                }
+                            ]
+                        },
+                        "description": "Get all confirmed orders. ADMIN only."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Confirm Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/1/confirm",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "1",
+                                "confirm"
+                            ]
+                        },
+                        "description": "Confirm a PENDING order. ADMIN only. Updates client statistics (totalOrders, totalSpent, firstOrderDate, lastOrderDate) and recalculates tier. Only PENDING orders can be confirmed."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancel Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/1/cancel",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "1",
+                                "cancel"
+                            ]
+                        },
+                        "description": "Cancel an order. ADMIN only. Restores product stock. Cannot cancel CONFIRMED orders."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject Order",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/api/orders/1/reject",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "1",
+                                "reject"
+                            ]
+                        },
+                        "description": "Reject a PENDING order. ADMIN only. Restores product stock. Only PENDING orders can be rejected."
                     },
                     "response": []
                 }
             ],
-            "description": "Order management with complex discount calculations (tier + promo) and tax application"
+            "description": "Order management with status transitions, tier calculation, and client statistics updates"
         }
     ],
     "variable": [

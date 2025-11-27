@@ -153,4 +153,140 @@ public class OrderServiceImpl implements OrderService {
             default -> BigDecimal.ZERO;
         };
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDTO getOrderById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+        return orderMapper.toDTO(order);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(orderMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getOrdersByClientId(Long clientId) {
+        if (!clientRepository.existsById(clientId)) {
+            throw new ResourceNotFoundException("Client not found with ID: " + clientId);
+        }
+        return orderRepository.findByClientId(clientId).stream()
+                .map(orderMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDTO> getOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatus(status).stream()
+                .map(orderMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO confirmOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new BusinessRuleViolationException(
+                    "Only PENDING orders can be confirmed. Current status: " + order.getStatus());
+        }
+
+        order.setStatus(OrderStatus.CONFIRMED);
+        Order confirmedOrder = orderRepository.save(order);
+
+        updateClientStatistics(order);
+
+        return orderMapper.toDTO(confirmedOrder);
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO cancelOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+        if (order.getStatus() == OrderStatus.CONFIRMED) {
+            throw new BusinessRuleViolationException("Cannot cancel a CONFIRMED order");
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELED) {
+            throw new BusinessRuleViolationException("Order is already CANCELED");
+        }
+
+        order.setStatus(OrderStatus.CANCELED);
+
+        restoreProductStock(order);
+
+        Order canceledOrder = orderRepository.save(order);
+        return orderMapper.toDTO(canceledOrder);
+    }
+
+    @Override
+    @Transactional
+    public OrderDTO rejectOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new BusinessRuleViolationException(
+                    "Only PENDING orders can be rejected. Current status: " + order.getStatus());
+        }
+
+        order.setStatus(OrderStatus.REJECTED);
+
+        restoreProductStock(order);
+
+        Order rejectedOrder = orderRepository.save(order);
+        return orderMapper.toDTO(rejectedOrder);
+    }
+
+    private void updateClientStatistics(Order order) {
+        Client client = order.getClient();
+
+        client.setTotalOrders(client.getTotalOrders() + 1);
+        client.setTotalSpent(client.getTotalSpent().add(order.getTotalAmount()));
+
+        if (client.getFirstOrderDate() == null) {
+            client.setFirstOrderDate(order.getCreatedAt());
+        }
+        client.setLastOrderDate(order.getCreatedAt());
+
+        updateClientTier(client);
+
+        clientRepository.save(client);
+    }
+
+    private void updateClientTier(Client client) {
+        Integer totalOrders = client.getTotalOrders();
+        BigDecimal totalSpent = client.getTotalSpent();
+
+        CustomerTier newTier = CustomerTier.BASIC;
+
+        if (totalOrders >= 20 || totalSpent.compareTo(new BigDecimal("15000")) >= 0) {
+            newTier = CustomerTier.PLATINUM;
+        } else if (totalOrders >= 10 || totalSpent.compareTo(new BigDecimal("5000")) >= 0) {
+            newTier = CustomerTier.GOLD;
+        } else if (totalOrders >= 3 || totalSpent.compareTo(new BigDecimal("1000")) >= 0) {
+            newTier = CustomerTier.SILVER;
+        }
+
+        client.setTier(newTier);
+    }
+
+    private void restoreProductStock(Order order) {
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.setStock(product.getStock() + orderItem.getQuantity());
+            productRepository.save(product);
+        }
+    }
 }
