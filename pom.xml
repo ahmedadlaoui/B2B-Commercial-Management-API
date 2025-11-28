@@ -71,7 +71,8 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- 8. TESTING -->
+        <!-- 8. TESTING (JUnit 5 + Mockito + AssertJ) -->
+        <!-- This starter automatically brings in JUnit Jupiter and Mockito Core -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
