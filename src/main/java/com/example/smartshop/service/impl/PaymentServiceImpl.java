@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -80,5 +81,36 @@ public class PaymentServiceImpl implements PaymentService {
         if (newRemaining.compareTo(BigDecimal.ZERO) == 0) {
             order.setStatus(OrderStatus.CONFIRMED);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaymentDTO getPaymentById(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with ID: " + id));
+
+        return paymentMapper.toDTO(payment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaymentDTO> getPaymentsByOrderId(Long orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new ResourceNotFoundException("Order not found with ID: " + orderId);
+        }
+
+        List<Payment> payments = paymentRepository.findByOrderId(orderId);
+        return payments.stream()
+                .map(paymentMapper::toDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaymentDTO> getAllPayments() {
+        List<Payment> payments = paymentRepository.findAll();
+        return payments.stream()
+                .map(paymentMapper::toDTO)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

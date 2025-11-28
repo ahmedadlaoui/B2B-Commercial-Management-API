@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -50,6 +51,43 @@ public class PaymentController {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Payment processed successfully");
         response.put("payment", payment);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> getPaymentById(
+            @PathVariable Long id,
+            HttpSession session) {
+
+        authorizationUtil.requireAdmin(session);
+
+        PaymentDTO payment = paymentService.getPaymentById(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("payment", payment);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> getAllPayments(
+            @RequestParam(required = false) Long orderId,
+            HttpSession session) {
+
+        authorizationUtil.requireAdmin(session);
+
+        List<PaymentDTO> payments;
+
+        if (orderId != null) {
+            payments = paymentService.getPaymentsByOrderId(orderId);
+        } else {
+            payments = paymentService.getAllPayments();
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("payments", payments);
+        response.put("count", payments.size());
 
         return ResponseEntity.ok(response);
     }

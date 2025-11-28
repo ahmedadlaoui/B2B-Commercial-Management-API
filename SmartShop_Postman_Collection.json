@@ -1,16 +1,31 @@
 {
     "info": {
-        "_postman_id": "smartshop-complete-collection",
-        "name": "SmartShop API - Complete Collection v2",
-        "description": "Complete API collection for SmartShop B2B Commercial Management System with all endpoints including order management",
+        "_postman_id": "smartshop-api-collection",
+        "name": "SmartShop B2B API",
+        "description": "Complete API collection for SmartShop B2B Commercial Management System",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
-            "name": "Auth",
+            "name": "Authentication",
             "item": [
                 {
-                    "name": "Login",
+                    "name": "Login as Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"sessionId\", jsonData.sessionId);",
+                                    "    console.log(\"Session ID saved: \" + jsonData.sessionId);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -21,40 +36,38 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/auth/login",
+                            "raw": "{{baseUrl}}/api/auth/login",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "auth",
                                 "login"
                             ]
-                        },
-                        "description": "Login with username and password. Returns session ID and user details."
+                        }
                     },
                     "response": []
                 },
                 {
-                    "name": "Get Current User (Me)",
+                    "name": "Get Current User",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/auth/me",
+                            "raw": "{{baseUrl}}/api/auth/me",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "auth",
                                 "me"
                             ]
-                        },
-                        "description": "Get current logged-in user information. Requires active session."
+                        }
                     },
                     "response": []
                 },
@@ -64,28 +77,41 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/auth/logout",
+                            "raw": "{{baseUrl}}/api/auth/logout",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "auth",
                                 "logout"
                             ]
-                        },
-                        "description": "Logout and invalidate current session."
+                        }
                     },
                     "response": []
                 }
-            ],
-            "description": "Authentication endpoints for login, logout, and session management"
+            ]
         },
         {
             "name": "Clients",
             "item": [
                 {
                     "name": "Create Client",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"clientId\", jsonData.client.id);",
+                                    "    console.log(\"Client ID saved: \" + jsonData.client.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -96,19 +122,75 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"username\": \"client1\",\n  \"password\": \"client123\",\n  \"fullName\": \"Ahmed El Mansouri\",\n  \"email\": \"ahmed@example.com\"\n}"
+                            "raw": "{\n    \"fullName\": \"Test Client Company\",\n    \"email\": \"client@example.com\",\n    \"username\": \"testclient\",\n    \"password\": \"password123\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/clients",
+                            "raw": "{{baseUrl}}/api/clients",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "clients"
                             ]
-                        },
-                        "description": "Create a new client. ADMIN only. Creates both User and Client entities. Client starts with BASIC tier."
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Clients",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/clients",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/clients/{{clientId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "{{clientId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Client by Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/clients/email/client@example.com",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "clients",
+                                "email",
+                                "client@example.com"
+                            ]
+                        }
                     },
                     "response": []
                 },
@@ -124,122 +206,39 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"fullName\": \"Ahmed El Mansouri Updated\",\n  \"email\": \"ahmed.updated@example.com\"\n}"
+                            "raw": "{\n    \"fullName\": \"Updated Client Company\",\n    \"email\": \"updated@example.com\"\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/clients/1",
+                            "raw": "{{baseUrl}}/api/clients/{{clientId}}",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "clients",
-                                "1"
+                                "{{clientId}}"
                             ]
-                        },
-                        "description": "Update client details. ADMIN only. All fields are optional."
+                        }
                     },
                     "response": []
                 },
                 {
-                    "name": "Get Client by ID",
+                    "name": "Get Client Orders",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/clients/1",
+                            "raw": "{{baseUrl}}/api/clients/{{clientId}}/orders",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "clients",
-                                "1"
-                            ]
-                        },
-                        "description": "Get client by ID. ADMIN only. Returns client info including tier, totalOrders, totalSpent, firstOrderDate, lastOrderDate."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client by User ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/clients/user/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "clients",
-                                "user",
-                                "1"
-                            ]
-                        },
-                        "description": "Get client by associated user ID. ADMIN only."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client by Email",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/clients/email/ahmed@example.com",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "clients",
-                                "email",
-                                "ahmed@example.com"
-                            ]
-                        },
-                        "description": "Get client by email address. ADMIN only."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Clients",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/clients",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "clients"
-                            ]
-                        },
-                        "description": "Get all clients. ADMIN only."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Client Order History",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/clients/1/orders",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "clients",
-                                "1",
+                                "{{clientId}}",
                                 "orders"
                             ]
-                        },
-                        "description": "Get order history for a specific client. ADMIN only. Shows all orders with details."
+                        }
                     },
                     "response": []
                 },
@@ -249,28 +248,41 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/clients/1",
+                            "raw": "{{baseUrl}}/api/clients/{{clientId}}",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "clients",
-                                "1"
+                                "{{clientId}}"
                             ]
-                        },
-                        "description": "Delete client and associated user. ADMIN only. Cannot delete if client has pending orders."
+                        }
                     },
                     "response": []
                 }
-            ],
-            "description": "Client management endpoints - all require ADMIN role"
+            ]
         },
         {
             "name": "Products",
             "item": [
                 {
                     "name": "Create Product",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"productId\", jsonData.product.id);",
+                                    "    console.log(\"Product ID saved: \" + jsonData.product.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -281,19 +293,105 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450\",\n  \"description\": \"Professional business laptop with 16GB RAM\",\n  \"price\": 8999.99,\n  \"stock\": 50\n}"
+                            "raw": "{\n    \"name\": \"Test Product\",\n    \"description\": \"This is a test product\",\n    \"price\": 100.00,\n    \"stock\": 50\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/products",
+                            "raw": "{{baseUrl}}/api/products",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "products"
                             ]
-                        },
-                        "description": "Create a new product. ADMIN only."
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?page=0&size=10&sortBy=id&sortDir=ASC",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "sortBy",
+                                    "value": "id"
+                                },
+                                {
+                                    "key": "sortDir",
+                                    "value": "ASC"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Product by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products/{{productId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products",
+                                "{{productId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Search Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products?search=Test&page=0&size=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "products"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "Test"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "size",
+                                    "value": "10"
+                                }
+                            ]
+                        }
                     },
                     "response": []
                 },
@@ -309,129 +407,19 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Laptop HP ProBook 450 G9\",\n  \"description\": \"Professional business laptop with 16GB RAM and 512GB SSD\",\n  \"price\": 9499.99,\n  \"stock\": 45\n}"
+                            "raw": "{\n    \"name\": \"Updated Product\",\n    \"description\": \"Updated description\",\n    \"price\": 120.00,\n    \"stock\": 60\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/products/1",
+                            "raw": "{{baseUrl}}/api/products/{{productId}}",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "products",
-                                "1"
+                                "{{productId}}"
                             ]
-                        },
-                        "description": "Update product details. ADMIN only. All fields are optional."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Product by ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/products/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products",
-                                "1"
-                            ]
-                        },
-                        "description": "Get product by ID. Requires login (ADMIN or CLIENT)."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Products (Default)",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/products",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products"
-                            ]
-                        },
-                        "description": "Get all products with default pagination. Requires login."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get All Products (Paginated)",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/products?page=0&size=20&sortBy=name&sortDir=ASC",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products"
-                            ],
-                            "query": [
-                                {
-                                    "key": "page",
-                                    "value": "0"
-                                },
-                                {
-                                    "key": "size",
-                                    "value": "20"
-                                },
-                                {
-                                    "key": "sortBy",
-                                    "value": "name"
-                                },
-                                {
-                                    "key": "sortDir",
-                                    "value": "ASC"
-                                }
-                            ]
-                        },
-                        "description": "Get products with custom pagination and sorting."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Search Products",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/products?search=laptop&sortBy=price&sortDir=DESC",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "products"
-                            ],
-                            "query": [
-                                {
-                                    "key": "search",
-                                    "value": "laptop"
-                                },
-                                {
-                                    "key": "sortBy",
-                                    "value": "price"
-                                },
-                                {
-                                    "key": "sortDir",
-                                    "value": "DESC"
-                                }
-                            ]
-                        },
-                        "description": "Search products by name or description."
+                        }
                     },
                     "response": []
                 },
@@ -441,17 +429,16 @@
                         "method": "DELETE",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/products/1",
+                            "raw": "{{baseUrl}}/api/products/{{productId}}",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "products",
-                                "1"
+                                "{{productId}}"
                             ]
-                        },
-                        "description": "Soft delete a product. ADMIN only."
+                        }
                     },
                     "response": []
                 },
@@ -461,29 +448,110 @@
                         "method": "POST",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/products/1/restore",
+                            "raw": "{{baseUrl}}/api/products/{{productId}}/restore",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "products",
-                                "1",
+                                "{{productId}}",
                                 "restore"
                             ]
-                        },
-                        "description": "Restore a soft-deleted product. ADMIN only."
+                        }
                     },
                     "response": []
                 }
-            ],
-            "description": "Product management with specification-based search, pagination, and soft-delete"
+            ]
+        },
+        {
+            "name": "Promo Codes",
+            "item": [
+                {
+                    "name": "Create Promo Code",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"promoCodeId\", jsonData.promoCode.id);",
+                                    "    pm.collectionVariables.set(\"promoCodeName\", jsonData.promoCode.code);",
+                                    "    console.log(\"Promo Code ID saved: \" + jsonData.promoCode.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"code\": \"SUMMER2025\",\n    \"discountPercent\": 15.00,\n    \"expirationDate\": \"2025-12-31T23:59:59\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/promocodes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "promocodes"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Deactivate Promo Code",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/promocodes/{{promoCodeId}}/deactivate",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "promocodes",
+                                "{{promoCodeId}}",
+                                "deactivate"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         },
         {
             "name": "Orders",
             "item": [
                 {
-                    "name": "Create Order (No Promo)",
+                    "name": "Create Order (with Promo Code)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"orderId\", jsonData.order.id);",
+                                    "    console.log(\"Order ID saved: \" + jsonData.order.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -494,24 +562,38 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"clientId\": 1,\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 1\n    }\n  ]\n}"
+                            "raw": "{\n    \"clientId\": {{clientId}},\n    \"promoCode\": \"{{promoCodeName}}\",\n    \"items\": [\n        {\n            \"productId\": {{productId}},\n            \"quantity\": 5\n        }\n    ]\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/orders",
+                            "raw": "{{baseUrl}}/api/orders",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders"
                             ]
-                        },
-                        "description": "Create order without promo code. ADMIN only. Status defaults to PENDING. Applies tier discount based on client's current tier. Stock is reduced immediately."
+                        }
                     },
                     "response": []
                 },
                 {
-                    "name": "Create Order (With Promo)",
+                    "name": "Create Order (without Promo Code)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"orderId\", jsonData.order.id);",
+                                    "    console.log(\"Order ID saved: \" + jsonData.order.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
                     "request": {
                         "method": "POST",
                         "header": [
@@ -522,39 +604,18 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"clientId\": 1,\n  \"promoCode\": \"SUMMER2024\",\n  \"items\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 3\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 2\n    }\n  ]\n}"
+                            "raw": "{\n    \"clientId\": {{clientId}},\n    \"items\": [\n        {\n            \"productId\": {{productId}},\n            \"quantity\": 3\n        }\n    ]\n}"
                         },
                         "url": {
-                            "raw": "{{base_url}}/api/orders",
+                            "raw": "{{baseUrl}}/api/orders",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders"
                             ]
-                        },
-                        "description": "Create order with promo code. ADMIN only. Validates promo code (active and not expired). Applies both tier and promo discounts."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Order by ID",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/orders/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "orders",
-                                "1"
-                            ]
-                        },
-                        "description": "Get order by ID. ADMIN only. Returns complete order details."
+                        }
                     },
                     "response": []
                 },
@@ -564,28 +625,46 @@
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders",
+                            "raw": "{{baseUrl}}/api/orders",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders"
                             ]
-                        },
-                        "description": "Get all orders. ADMIN only."
+                        }
                     },
                     "response": []
                 },
                 {
-                    "name": "Get Orders by Client ID",
+                    "name": "Get Order by ID",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders?clientId=1",
+                            "raw": "{{baseUrl}}/api/orders/{{orderId}}",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "{{orderId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Orders by Client",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/orders?clientId={{clientId}}",
+                            "host": [
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
@@ -594,23 +673,22 @@
                             "query": [
                                 {
                                     "key": "clientId",
-                                    "value": "1"
+                                    "value": "{{clientId}}"
                                 }
                             ]
-                        },
-                        "description": "Get all orders for a specific client. ADMIN only."
+                        }
                     },
                     "response": []
                 },
                 {
-                    "name": "Get Orders by Status (PENDING)",
+                    "name": "Get Orders by Status",
                     "request": {
                         "method": "GET",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders?status=PENDING",
+                            "raw": "{{baseUrl}}/api/orders?status=PENDING",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
@@ -622,33 +700,7 @@
                                     "value": "PENDING"
                                 }
                             ]
-                        },
-                        "description": "Get all orders with PENDING status. ADMIN only."
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Orders by Status (CONFIRMED)",
-                    "request": {
-                        "method": "GET",
-                        "header": [],
-                        "url": {
-                            "raw": "{{base_url}}/api/orders?status=CONFIRMED",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "orders"
-                            ],
-                            "query": [
-                                {
-                                    "key": "status",
-                                    "value": "CONFIRMED"
-                                }
-                            ]
-                        },
-                        "description": "Get all confirmed orders. ADMIN only."
+                        }
                     },
                     "response": []
                 },
@@ -658,18 +710,17 @@
                         "method": "PUT",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders/1/confirm",
+                            "raw": "{{baseUrl}}/api/orders/{{orderId}}/confirm",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders",
-                                "1",
+                                "{{orderId}}",
                                 "confirm"
                             ]
-                        },
-                        "description": "Confirm a PENDING order. ADMIN only. Updates client statistics (totalOrders, totalSpent, firstOrderDate, lastOrderDate) and recalculates tier. Only PENDING orders can be confirmed."
+                        }
                     },
                     "response": []
                 },
@@ -679,18 +730,17 @@
                         "method": "PUT",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders/1/cancel",
+                            "raw": "{{baseUrl}}/api/orders/{{orderId}}/cancel",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders",
-                                "1",
+                                "{{orderId}}",
                                 "cancel"
                             ]
-                        },
-                        "description": "Cancel an order. ADMIN only. Restores product stock. Cannot cancel CONFIRMED orders."
+                        }
                     },
                     "response": []
                 },
@@ -700,29 +750,279 @@
                         "method": "PUT",
                         "header": [],
                         "url": {
-                            "raw": "{{base_url}}/api/orders/1/reject",
+                            "raw": "{{baseUrl}}/api/orders/{{orderId}}/reject",
                             "host": [
-                                "{{base_url}}"
+                                "{{baseUrl}}"
                             ],
                             "path": [
                                 "api",
                                 "orders",
-                                "1",
+                                "{{orderId}}",
                                 "reject"
                             ]
-                        },
-                        "description": "Reject a PENDING order. ADMIN only. Restores product stock. Only PENDING orders can be rejected."
+                        }
                     },
                     "response": []
                 }
-            ],
-            "description": "Order management with status transitions, tier calculation, and client statistics updates"
+            ]
+        },
+        {
+            "name": "Payments",
+            "item": [
+                {
+                    "name": "Create Payment (Cash - Auto Process)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"paymentId\", jsonData.payment.id);",
+                                    "    console.log(\"Payment ID saved: \" + jsonData.payment.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderId\": {{orderId}},\n    \"amount\": 200.00,\n    \"method\": \"CASH\",\n    \"referenceNumber\": \"CASH-001\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Payment (Check - Pending)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"paymentId\", jsonData.payment.id);",
+                                    "    console.log(\"Payment ID saved: \" + jsonData.payment.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderId\": {{orderId}},\n    \"amount\": 150.00,\n    \"method\": \"CHECK\",\n    \"referenceNumber\": \"CHK-12345\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Payment (Transfer - Pending)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.collectionVariables.set(\"paymentId\", jsonData.payment.id);",
+                                    "    console.log(\"Payment ID saved: \" + jsonData.payment.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"orderId\": {{orderId}},\n    \"amount\": 100.00,\n    \"method\": \"TRANSFER\",\n    \"referenceNumber\": \"TRANS-98765\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Confirm/Process Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments/confirm?paymentId={{paymentId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments",
+                                "confirm"
+                            ],
+                            "query": [
+                                {
+                                    "key": "paymentId",
+                                    "value": "{{paymentId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get All Payments",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Payment by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments/{{paymentId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments",
+                                "{{paymentId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Payments by Order",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/payments?orderId={{orderId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "payments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "orderId",
+                                    "value": "{{orderId}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "variable": [
         {
-            "key": "base_url",
+            "key": "baseUrl",
             "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "sessionId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "clientId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "productId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "orderId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "paymentId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "promoCodeId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "promoCodeName",
+            "value": "",
             "type": "string"
         }
     ]
