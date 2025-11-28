@@ -32,7 +32,6 @@ public class ProductSpecification {
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
-
     }
 
     public static Specification<Product> hasStockBetween(Integer minStock, Integer maxStock) {

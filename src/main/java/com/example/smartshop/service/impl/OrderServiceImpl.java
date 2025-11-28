@@ -200,6 +200,11 @@ public class OrderServiceImpl implements OrderService {
                     "Only PENDING orders can be confirmed. Current status: " + order.getStatus());
         }
 
+        if(order.getRemainingAmount().compareTo(BigDecimal.ZERO) != 0){
+            throw new BusinessRuleViolationException(
+                    "Cannot confirm an order that is not payed yet ==> remaining amount: " + order.getRemainingAmount());
+        }
+
         order.setStatus(OrderStatus.CONFIRMED);
         Order confirmedOrder = orderRepository.save(order);
 
